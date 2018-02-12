@@ -231,8 +231,17 @@ config.configFile(process.argv[2], function (config) {
         if (config.dumpMessages) {
           l.log(metrics[midx].toString());
         }
-        var bits = metrics[midx].toString().split(':');
-        var key = sanitizeKeyName(bits.shift());
+        var bits = metrics[midx].toString().split('#');
+        var tags = null;
+        if (bits.length > 1) {
+          tags = bits[1];
+        }
+        bits = bits[0].split(':');
+        var key = bits.shift();
+        if (tags) {
+          key += ';' + tags.replace(',',';').replace(':','=');
+        }
+        key = sanitizeKeyName(key);
 
         if (keyFlushInterval > 0) {
           if (! keyCounter[key]) {
